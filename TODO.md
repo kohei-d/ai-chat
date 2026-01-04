@@ -11,27 +11,27 @@
 ## Phase 1: プロジェクト初期セットアップ
 
 ### 1.1 プロジェクト基盤の構築
-- [ ] Next.js 14+ プロジェクトの作成（App Router使用）
+- [x] Next.js 14+ プロジェクトの作成（App Router使用）
   ```bash
   npx create-next-app@latest ai-chat --typescript --tailwind --app --no-src-dir
   ```
-- [ ] 必要なパッケージのインストール
-  - [ ] Hono: `npm install hono @hono/node-server`
-  - [ ] Prisma: `npm install prisma @prisma/client`
-  - [ ] Claude SDK: `npm install @anthropic-ai/sdk`
-  - [ ] ロギング: `npm install pino pino-pretty`
-  - [ ] Markdown: `npm install react-markdown`
-  - [ ] その他: `npm install uuid @types/uuid`
-- [ ] 開発ツールのセットアップ
-  - [ ] ESLint設定の確認・調整
-  - [ ] Prettier設定の追加
-  - [ ] `.editorconfig` の作成
-- [ ] Git初期化とリポジトリ設定
-  - [ ] `.gitignore` に `.env.local` などを追加
-  - [ ] 初回コミット
+- [x] 必要なパッケージのインストール
+  - [x] Hono: `npm install hono @hono/node-server`
+  - [x] Prisma: `npm install prisma @prisma/client`
+  - [x] Claude SDK: `npm install @anthropic-ai/sdk`
+  - [x] ロギング: `npm install pino pino-pretty`
+  - [x] Markdown: `npm install react-markdown`
+  - [x] その他: `npm install uuid @types/uuid`
+- [x] 開発ツールのセットアップ
+  - [x] ESLint設定の確認・調整
+  - [x] Prettier設定の追加
+  - [x] `.editorconfig` の作成
+- [x] Git初期化とリポジトリ設定
+  - [x] `.gitignore` に `.env.local` などを追加
+  - [x] 初回コミット
 
 ### 1.2 環境変数の設定
-- [ ] `.env.example` ファイルの作成
+- [x] `.env.example` ファイルの作成
   ```
   ANTHROPIC_API_KEY=
   DATABASE_URL=
@@ -39,15 +39,15 @@
   SESSION_EXPIRY=3600
   LOG_LEVEL=info
   ```
-- [ ] `.env.local` ファイルの作成（実際の値を設定）
-- [ ] 環境変数の型定義ファイル作成 `types/env.d.ts`
+- [x] `.env.local` ファイルの作成（実際の値を設定）
+- [x] 環境変数の型定義ファイル作成 `types/env.d.ts`
 
 ### 1.3 ディレクトリ構成の構築
-- [ ] 必要なディレクトリを作成
+- [x] 必要なディレクトリを作成
   ```
   mkdir -p components/chat components/common lib types __tests__/components __tests__/lib prisma
   ```
-- [ ] `README.md` の作成（プロジェクト説明、セットアップ手順）
+- [x] `README.md` の作成（プロジェクト説明、セットアップ手順）
 
 ---
 
