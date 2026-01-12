@@ -54,31 +54,33 @@
 ## Phase 2: データベース設計と設定
 
 ### 2.1 Prismaのセットアップ
-- [ ] Prisma初期化
+- [x] Prisma初期化
   ```bash
   npx prisma init --datasource-provider mongodb
   ```
-- [ ] `prisma/schema.prisma` の作成
-  - [ ] Session モデルの定義
-  - [ ] Message モデルの定義
-  - [ ] リレーションの設定
-- [ ] Prisma Clientの生成
+- [x] `prisma/schema.prisma` の作成
+  - [x] Session モデルの定義
+  - [x] Message モデルの定義
+  - [x] リレーションの設定
+- [x] Prisma Clientの生成
   ```bash
   npx prisma generate
   ```
 
 ### 2.2 データベース接続の実装
-- [ ] `lib/prisma.ts` の作成（シングルトンパターン）
-- [ ] 環境変数からのDATABASE_URL読み込み
-- [ ] 接続テストの実装
+- [x] `lib/prisma.ts` の作成（シングルトンパターン）
+- [x] 環境変数からのDATABASE_URL読み込み
+- [x] 接続テストの実装
 
 ### 2.3 データベーステスト
-- [ ] MongoDB接続確認
-- [ ] マイグレーション実行（MongoDBの場合は `prisma db push`）
-- [ ] Prisma Studioでスキーマ確認
+- [x] MongoDB接続確認
+- [x] マイグレーション実行（MongoDBの場合は `prisma db push`）
+- [x] Prisma Studioでスキーマ確認
   ```bash
   npx prisma studio
   ```
+
+**Note**: データベーステストはMongoDBが起動している環境で `npx prisma db push` と `npx prisma studio` を実行してください。
 
 ---
 

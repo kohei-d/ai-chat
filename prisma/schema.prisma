@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+model Session {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String    @unique
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String   @db.ObjectId
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String   // "user" or "assistant"
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+}
