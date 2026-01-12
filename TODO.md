@@ -87,46 +87,46 @@
 ## Phase 3: バックエンドAPI開発
 
 ### 3.1 共通ユーティリティの実装
-- [ ] `lib/logger.ts` の作成（pinoを使った構造化ロギング）
-- [ ] `lib/utils.ts` の作成（汎用的なヘルパー関数）
-- [ ] `lib/claude.ts` の作成（Claude APIクライアント）
-  - [ ] ストリーミングレスポンスの実装
-  - [ ] エラーハンドリング
-  - [ ] リトライロジック
+- [x] `lib/logger.ts` の作成（pinoを使った構造化ロギング）
+- [x] `lib/utils.ts` の作成（汎用的なヘルパー関数）
+- [x] `lib/claude.ts` の作成（Claude APIクライアント）
+  - [x] ストリーミングレスポンスの実装
+  - [x] エラーハンドリング
+  - [x] リトライロジック
 
 ### 3.2 型定義の作成
-- [ ] `types/chat.ts` の作成
-  - [ ] Message型
-  - [ ] Session型
-  - [ ] ChatRequest型
-  - [ ] ChatResponse型
-- [ ] `types/api.ts` の作成
-  - [ ] ErrorResponse型
-  - [ ] SuccessResponse型
+- [x] `types/chat.ts` の作成
+  - [x] Message型
+  - [x] Session型
+  - [x] ChatRequest型
+  - [x] ChatResponse型
+- [x] `types/api.ts` の作成
+  - [x] ErrorResponse型
+  - [x] SuccessResponse型
 
 ### 3.3 チャットAPIの実装
-- [ ] `app/api/chat/route.ts` の作成
-  - [ ] POSTメソッドの実装（チャットメッセージ送信）
-    - [ ] リクエストバリデーション
-    - [ ] セッション取得/作成
-    - [ ] メッセージのDB保存
-    - [ ] Claude APIへのリクエスト
-    - [ ] ストリーミングレスポンスの返却
-  - [ ] エラーハンドリング
-  - [ ] ロギング
+- [x] `app/api/chat/route.ts` の作成
+  - [x] POSTメソッドの実装（チャットメッセージ送信）
+    - [x] リクエストバリデーション
+    - [x] セッション取得/作成
+    - [x] メッセージのDB保存
+    - [x] Claude APIへのリクエスト
+    - [x] ストリーミングレスポンスの返却
+  - [x] エラーハンドリング
+  - [x] ロギング
 
 ### 3.4 会話履歴取得APIの実装
-- [ ] `app/api/chat/history/route.ts` の作成
-  - [ ] GETメソッドの実装
-    - [ ] sessionIdのクエリパラメータ取得
-    - [ ] セッションの会話履歴取得
-    - [ ] JSON形式でレスポンス
-  - [ ] エラーハンドリング
+- [x] `app/api/chat/history/route.ts` の作成
+  - [x] GETメソッドの実装
+    - [x] sessionIdのクエリパラメータ取得
+    - [x] セッションの会話履歴取得
+    - [x] JSON形式でレスポンス
+  - [x] エラーハンドリング
 
 ### 3.5 セッション管理機能
-- [ ] セッション有効期限チェック機能の実装
-- [ ] 期限切れセッションの自動削除（Cron Jobまたは定期タスク）
-- [ ] セッションID生成ユーティリティ
+- [x] セッション有効期限チェック機能の実装
+- [x] 期限切れセッションの自動削除（Cron Jobまたは定期タスク）
+- [x] セッションID生成ユーティリティ
 
 ---
 
