@@ -13,6 +13,7 @@ Next.js 14のApp Routerを使用し、モダンなWebアプリケーションと
 - 💬 ストリーミングレスポンスでリアルタイム表示
 - 📝 Markdown形式のレスポンス対応
 - 🗄️ MongoDBを使用したセッション単位の会話履歴管理
+- 💾 **MongoDBなしでも動作**（インメモリストレージに自動フォールバック）
 - 🎨 ビジネスライクなUI/UX
 
 ## 技術スタック
@@ -38,8 +39,8 @@ Next.js 14のApp Routerを使用し、モダンなWebアプリケーションと
 ### 前提条件
 
 - Node.js 18.x 以上
-- MongoDB (ローカルまたはMongoDB Atlas)
 - Anthropic API キー
+- MongoDB (オプション - なくてもインメモリストレージで動作します)
 
 ### インストール
 
@@ -59,10 +60,10 @@ npm install
 `.env.local` ファイルを作成し、以下の環境変数を設定してください：
 
 ```bash
-# Anthropic Claude API
+# Anthropic Claude API (必須)
 ANTHROPIC_API_KEY=your-api-key-here
 
-# Database
+# Database (オプション - 設定しない場合はインメモリストレージを使用)
 DATABASE_URL=mongodb://localhost:27017/ai-chat
 
 # Application
@@ -74,6 +75,8 @@ SESSION_EXPIRY=3600
 # Logging
 LOG_LEVEL=info
 ```
+
+**注意**: `DATABASE_URL`を設定しない、またはMongoDBに接続できない場合、アプリケーションは自動的にインメモリストレージにフォールバックします。この場合、サーバー再起動時にデータは失われます。
 
 `.env.example` をコピーして使用することもできます：
 ```bash
@@ -171,8 +174,22 @@ ai-chat/
 ## トラブルシューティング
 
 ### MongoDB接続エラー
+アプリケーションはMongoDBに接続できない場合、自動的にインメモリストレージを使用します。
+
+コンソールに以下のメッセージが表示されます：
+```
+[Storage] MongoDB not available, using in-memory storage
+[Storage] Note: Data will be lost when server restarts
+```
+
+**MongoDBを使用したい場合:**
 - `DATABASE_URL`の形式が正しいか確認（`mongodb://...` または `mongodb+srv://...`）
 - MongoDBサーバーが起動しているか確認
+- ネットワーク接続を確認
+
+**インメモリストレージで問題ない場合:**
+- そのまま開発を継続できます
+- データはサーバー再起動時に失われることに注意してください
 
 ### Claude APIエラー
 - `ANTHROPIC_API_KEY`が正しく設定されているか確認

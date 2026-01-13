@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getStorage } from "@/lib/storage";
 import { createLogger } from "@/lib/logger";
 import { isSessionExpired } from "@/lib/utils";
 import { createErrorResponse, createSuccessResponse } from "@/types/api";
@@ -25,14 +25,9 @@ export async function GET(request: NextRequest) {
 
     logger.info({ sessionId }, "Fetching chat history");
 
-    const session = await prisma.session.findUnique({
-      where: { sessionId },
-      include: {
-        messages: {
-          orderBy: { createdAt: "asc" },
-        },
-      },
-    });
+    // Get storage adapter
+    const storage = await getStorage();
+    const session = await storage.getSession(sessionId);
 
     if (!session) {
       logger.warn({ sessionId }, "Session not found");
@@ -45,7 +40,7 @@ export async function GET(request: NextRequest) {
     if (isSessionExpired(session.expiresAt)) {
       logger.warn({ sessionId }, "Session expired");
       // Clean up expired session
-      await prisma.session.delete({ where: { id: session.id } });
+      await storage.deleteSession(sessionId);
       return new Response(
         JSON.stringify(createErrorResponse("SESSION_EXPIRED", "Session has expired")),
         { status: 410, headers: { "Content-Type": "application/json" } }
@@ -55,7 +50,7 @@ export async function GET(request: NextRequest) {
     const response: HistoryResponse = {
       sessionId: session.sessionId,
       messages: session.messages.map((m) => ({
-        role: m.role as "user" | "assistant",
+        role: m.role,
         content: m.content,
         createdAt: m.createdAt.toISOString(),
       })),

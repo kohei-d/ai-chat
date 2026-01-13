@@ -11,7 +11,8 @@ export function generateSessionId(): string {
  * Calculate session expiration date
  */
 export function getSessionExpiresAt(): Date {
-  const expirySeconds = parseInt(process.env.SESSION_EXPIRY || "3600", 10);
+  const parsed = parseInt(process.env.SESSION_EXPIRY || "3600", 10);
+  const expirySeconds = isNaN(parsed) ? 3600 : parsed;
   return new Date(Date.now() + expirySeconds * 1000);
 }
 

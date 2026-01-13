@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getStorage } from "@/lib/storage";
 import { streamChatCompletion } from "@/lib/claude";
 import { createLogger } from "@/lib/logger";
 import { generateSessionId, getSessionExpiresAt, isSessionExpired } from "@/lib/utils";
@@ -46,41 +46,29 @@ export async function POST(request: NextRequest) {
 
     logger.info({ sessionId, messageLength: userMessage.length }, "Processing chat request");
 
+    // Get storage adapter
+    const storage = await getStorage();
+
     // Get or create session
-    let session = await prisma.session.findUnique({
-      where: { sessionId },
-      include: { messages: { orderBy: { createdAt: "asc" } } },
-    });
+    let session = await storage.getSession(sessionId);
 
     if (session && isSessionExpired(session.expiresAt)) {
       logger.info({ sessionId }, "Session expired, creating new session");
-      await prisma.session.delete({ where: { id: session.id } });
+      await storage.deleteSession(sessionId);
       session = null;
     }
 
     if (!session) {
-      session = await prisma.session.create({
-        data: {
-          sessionId,
-          expiresAt: getSessionExpiresAt(),
-        },
-        include: { messages: true },
-      });
+      session = await storage.createSession(sessionId, getSessionExpiresAt());
       logger.info({ sessionId }, "Created new session");
     }
 
     // Save user message
-    await prisma.message.create({
-      data: {
-        sessionId: session.id,
-        role: "user",
-        content: userMessage,
-      },
-    });
+    await storage.addMessage(sessionId, { role: "user", content: userMessage });
 
     // Prepare messages for Claude API
     const chatMessages: ChatMessage[] = [
-      ...session.messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+      ...session.messages.map((m) => ({ role: m.role, content: m.content })),
       { role: "user" as const, content: userMessage },
     ];
 
@@ -97,19 +85,7 @@ export async function POST(request: NextRequest) {
           }
 
           // Save assistant message after streaming completes
-          await prisma.message.create({
-            data: {
-              sessionId: session!.id,
-              role: "assistant",
-              content: assistantResponse,
-            },
-          });
-
-          // Update session expiration
-          await prisma.session.update({
-            where: { id: session!.id },
-            data: { expiresAt: getSessionExpiresAt() },
-          });
+          await storage.addMessage(sessionId!, { role: "assistant", content: assistantResponse });
 
           controller.enqueue(encoder.encode(formatSSE({ type: "done" })));
           controller.close();

@@ -347,6 +347,131 @@ describe('Claude API Client', () => {
 
 ---
 
+## Makefile - 開発コマンド集
+
+プロジェクトルートの `Makefile` に、開発に必要なコマンドがまとめられています。
+
+### ヘルプ表示
+
+```bash
+make help
+# または
+make
+```
+
+利用可能なすべてのコマンドと説明が表示されます。
+
+### 初期セットアップ
+
+```bash
+# 初回セットアップ（依存関係のインストール + Prisma生成 + .env.local作成）
+make setup
+```
+
+**実行内容:**
+1. `npm install` で依存関係をインストール
+2. `.env.example` から `.env.local` を作成（既に存在する場合はスキップ）
+3. `npx prisma generate` で Prisma Client を生成
+
+**セットアップ後の手順:**
+1. `.env.local` を編集して `ANTHROPIC_API_KEY` を設定
+2. 必要に応じて `DATABASE_URL` を設定（MongoDBを使う場合）
+
+### 開発コマンド
+
+```bash
+# 開発サーバー起動
+make dev
+
+# Prisma Studio起動（データベースGUI）
+make prisma-studio
+```
+
+### ビルドとテスト
+
+```bash
+# 本番ビルド
+make build
+
+# 本番サーバー起動
+make start
+
+# テスト実行
+make test
+
+# テストをウォッチモードで実行
+make test-watch
+
+# テストカバレッジ計測
+make test-coverage
+
+# ESLintチェック
+make lint
+```
+
+### Prisma操作
+
+```bash
+# Prisma Clientの再生成
+make prisma-generate
+
+# スキーマをMongoDBに反映
+make prisma-push
+
+# Prisma Studio起動
+make prisma-studio
+```
+
+### デプロイ
+
+```bash
+# Google Cloud Runへデプロイ
+make deploy PROJECT_ID=your-project-id
+
+# リージョン指定（デフォルト: asia-northeast1）
+make deploy PROJECT_ID=your-project-id REGION=us-central1
+```
+
+**前提条件:**
+- Google Cloud CLI（`gcloud`）がインストール済み
+- プロジェクトへの適切な権限
+- ソースベースのデプロイが有効
+
+### クリーンアップ
+
+```bash
+# ビルドキャッシュ削除
+make clean
+
+# すべての生成ファイルとnode_modulesを削除
+make clean-all
+```
+
+### よく使うコマンド例
+
+**初めてプロジェクトをクローンした場合:**
+```bash
+make setup
+# .env.local を編集
+make dev
+```
+
+**開発中:**
+```bash
+make dev              # 開発サーバー起動
+make test-watch       # テストを実行しながら開発
+make lint             # コードチェック
+```
+
+**デプロイ前:**
+```bash
+make test             # すべてのテストを実行
+make build            # ビルドエラーがないか確認
+make deploy PROJECT_ID=my-project
+```
+
+---
+
 ## 開発フロー
 
 ### ブランチ戦略
