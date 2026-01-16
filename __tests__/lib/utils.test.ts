@@ -99,9 +99,7 @@ describe("utils", () => {
     });
 
     it("should return true for current time (edge case)", async () => {
-      const now = new Date();
-      // Wait a tiny bit to ensure time has passed
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      const now = new Date(Date.now() - 1); // 1ms in the past
       expect(isSessionExpired(now)).toBe(true);
     });
   });
