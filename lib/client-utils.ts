@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { ChatMessage, StreamEvent } from '@/types/chat';
+import type { ChatMessage, ChatImage, StreamEvent } from '@/types/chat';
 
 const SESSION_ID_KEY = 'ai-chat-session-id';
 
@@ -38,7 +38,8 @@ export async function sendChatMessage(
   message: string,
   onChunk: (text: string) => void,
   onError: (error: string) => void,
-  onDone: (fullText: string) => void
+  onDone: (fullText: string) => void,
+  images?: ChatImage[]
 ): Promise<void> {
   let accumulatedText = '';
 
@@ -48,7 +49,7 @@ export async function sendChatMessage(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ sessionId, message }),
+      body: JSON.stringify({ sessionId, message, images }),
     });
 
     if (!response.ok) {

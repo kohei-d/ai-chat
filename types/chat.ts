@@ -4,11 +4,21 @@
 export type MessageRole = "user" | "assistant";
 
 /**
+ * Image data for chat message
+ */
+export interface ChatImage {
+  data: string; // Base64 encoded image data
+  mimeType: string; // image/png, image/jpeg, image/webp, image/gif
+  size: number; // File size in bytes
+}
+
+/**
  * Chat message for API communication
  */
 export interface ChatMessage {
   role: MessageRole;
   content: string;
+  images?: ChatImage[];
 }
 
 /**
@@ -36,6 +46,7 @@ export interface Session {
 export interface ChatRequest {
   sessionId: string;
   message: string;
+  images?: ChatImage[];
 }
 
 /**

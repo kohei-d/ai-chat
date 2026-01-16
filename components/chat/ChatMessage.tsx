@@ -19,7 +19,24 @@ export default function ChatMessage({ message, isStreaming = false }: ChatMessag
         }`}
       >
         {isUser ? (
-          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+          <div className="space-y-2">
+            {/* Display images if present */}
+            {message.images && message.images.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                {message.images.map((image, index) => (
+                  <img
+                    key={index}
+                    src={`data:${image.mimeType};base64,${image.data}`}
+                    alt={`Uploaded image ${index + 1}`}
+                    className="rounded-lg max-w-full h-auto"
+                  />
+                ))}
+              </div>
+            )}
+            {message.content && (
+              <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            )}
+          </div>
         ) : (
           <div className="prose prose-sm max-w-none">
             <ReactMarkdown

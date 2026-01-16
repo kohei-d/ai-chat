@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import type { ChatMessage } from '@/types/chat';
+import type { ChatMessage, ChatImage } from '@/types/chat';
 import { getSessionId, sendChatMessage, fetchChatHistory } from '@/lib/client-utils';
 import ChatMessageComponent from './ChatMessage';
 import StreamingText from './StreamingText';
@@ -44,10 +44,10 @@ export default function ChatContainer() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, images?: ChatImage[]) => {
     if (!sessionId || isSending) return;
 
-    const userMessage: ChatMessage = { role: 'user', content: message };
+    const userMessage: ChatMessage = { role: 'user', content: message, images };
     setMessages((prev) => [...prev, userMessage]);
     setIsSending(true);
     setError(null);
@@ -75,7 +75,8 @@ export default function ChatContainer() {
         }
         setStreamingText('');
         setIsSending(false);
-      }
+      },
+      images
     );
   };
 

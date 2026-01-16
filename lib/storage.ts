@@ -3,7 +3,15 @@
  * Supports both MongoDB (via Prisma) and in-memory storage
  */
 
-import type { ChatMessage } from '@/types/chat';
+import type { ChatMessage, ChatImage } from '@/types/chat';
+
+export interface ImageData {
+  id: string;
+  data: string;
+  mimeType: string;
+  size: number;
+  createdAt: Date;
+}
 
 export interface SessionData {
   id: string;
@@ -17,6 +25,7 @@ export interface MessageData {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  images?: ImageData[];
   createdAt: Date;
 }
 
@@ -84,6 +93,13 @@ class InMemoryStorage implements StorageAdapter {
       id: `msg_${++this.messageIdCounter}`,
       role: message.role,
       content: message.content,
+      images: message.images?.map((img, idx) => ({
+        id: `img_${this.messageIdCounter}_${idx}`,
+        data: img.data,
+        mimeType: img.mimeType,
+        size: img.size,
+        createdAt: new Date(),
+      })),
       createdAt: new Date(),
     };
 
@@ -141,6 +157,9 @@ class MongoDBStorage implements StorageAdapter {
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
+          include: {
+            images: true,
+          },
         },
       },
     });
@@ -177,6 +196,16 @@ class MongoDBStorage implements StorageAdapter {
         sessionId: session.id,
         role: message.role,
         content: message.content,
+        images: message.images ? {
+          create: message.images.map((img) => ({
+            data: img.data,
+            mimeType: img.mimeType,
+            size: img.size,
+          })),
+        } : undefined,
+      },
+      include: {
+        images: true,
       },
     });
 
@@ -184,6 +213,13 @@ class MongoDBStorage implements StorageAdapter {
       id: messageData.id,
       role: messageData.role as 'user' | 'assistant',
       content: messageData.content,
+      images: messageData.images?.map((img) => ({
+        id: img.id,
+        data: img.data,
+        mimeType: img.mimeType,
+        size: img.size,
+        createdAt: img.createdAt,
+      })),
       createdAt: messageData.createdAt,
     };
   }
@@ -212,6 +248,13 @@ class MongoDBStorage implements StorageAdapter {
       id: string;
       role: string;
       content: string;
+      images?: Array<{
+        id: string;
+        data: string;
+        mimeType: string;
+        size: number;
+        createdAt: Date;
+      }>;
       createdAt: Date;
     }>;
     createdAt: Date;
@@ -224,6 +267,13 @@ class MongoDBStorage implements StorageAdapter {
         id: msg.id,
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
+        images: msg.images?.map((img) => ({
+          id: img.id,
+          data: img.data,
+          mimeType: img.mimeType,
+          size: img.size,
+          createdAt: img.createdAt,
+        })),
         createdAt: msg.createdAt,
       })) || [],
       createdAt: session.createdAt,

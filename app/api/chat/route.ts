@@ -4,6 +4,7 @@ import { streamChatCompletion } from "@/lib/claude";
 import { createLogger } from "@/lib/logger";
 import { generateSessionId, getSessionExpiresAt, isSessionExpired } from "@/lib/utils";
 import { createErrorResponse } from "@/types/api";
+import { validateImages } from "@/lib/image";
 import type { ChatRequest, ChatMessage, StreamEvent } from "@/types/chat";
 
 const logger = createLogger({ module: "api/chat" });
@@ -13,8 +14,32 @@ const logger = createLogger({ module: "api/chat" });
  */
 function validateRequest(body: unknown): body is ChatRequest {
   if (typeof body !== "object" || body === null) return false;
-  const { sessionId, message } = body as Record<string, unknown>;
-  return typeof sessionId === "string" && typeof message === "string" && message.trim().length > 0;
+  const { sessionId, message, images } = body as Record<string, unknown>;
+
+  // Basic validation
+  if (typeof sessionId !== "string" || typeof message !== "string" || message.trim().length === 0) {
+    return false;
+  }
+
+  // Validate images if present
+  if (images !== undefined) {
+    if (!Array.isArray(images)) return false;
+
+    // Validate each image structure
+    for (const img of images) {
+      if (
+        typeof img !== "object" ||
+        img === null ||
+        typeof img.data !== "string" ||
+        typeof img.mimeType !== "string" ||
+        typeof img.size !== "number"
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 /**
@@ -43,8 +68,24 @@ export async function POST(request: NextRequest) {
 
     sessionId = body.sessionId || generateSessionId();
     const userMessage = body.message.trim();
+    const images = body.images;
 
-    logger.info({ sessionId, messageLength: userMessage.length }, "Processing chat request");
+    // Validate images if present
+    if (images && images.length > 0) {
+      const validationResult = validateImages(images);
+      if (!validationResult.valid) {
+        logger.warn({ sessionId, error: validationResult.error }, "Image validation failed");
+        return new Response(
+          JSON.stringify(createErrorResponse("VALIDATION_ERROR", validationResult.message || "Invalid images")),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    logger.info(
+      { sessionId, messageLength: userMessage.length, imageCount: images?.length || 0 },
+      "Processing chat request"
+    );
 
     // Get storage adapter
     const storage = await getStorage();
@@ -64,12 +105,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Save user message
-    await storage.addMessage(sessionId, { role: "user", content: userMessage });
+    await storage.addMessage(sessionId, { role: "user", content: userMessage, images });
 
     // Prepare messages for Claude API
     const chatMessages: ChatMessage[] = [
-      ...session.messages.map((m) => ({ role: m.role, content: m.content })),
-      { role: "user" as const, content: userMessage },
+      ...session.messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+        images: m.images
+      })),
+      { role: "user" as const, content: userMessage, images },
     ];
 
     // Create streaming response

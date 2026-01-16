@@ -28,14 +28,48 @@ function getClient(): Anthropic {
 
 /**
  * Convert chat messages to Anthropic message format
+ * Supports both text-only and multimodal (text + images) messages
  */
 function toAnthropicMessages(
   messages: ChatMessage[]
 ): Anthropic.MessageParam[] {
-  return messages.map((msg) => ({
-    role: msg.role as "user" | "assistant",
-    content: msg.content,
-  }));
+  return messages.map((msg) => {
+    // If message has images, create multimodal content
+    if (msg.images && msg.images.length > 0) {
+      const content: Anthropic.MessageParam["content"] = [];
+
+      // Add images first
+      for (const image of msg.images) {
+        content.push({
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: image.mimeType as "image/png" | "image/jpeg" | "image/webp" | "image/gif",
+            data: image.data,
+          },
+        });
+      }
+
+      // Add text content
+      if (msg.content) {
+        content.push({
+          type: "text",
+          text: msg.content,
+        });
+      }
+
+      return {
+        role: msg.role as "user" | "assistant",
+        content,
+      };
+    }
+
+    // Text-only message
+    return {
+      role: msg.role as "user" | "assistant",
+      content: msg.content,
+    };
+  });
 }
 
 /**
