@@ -81,6 +81,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Service**: ai-chat" >> $GITHUB_STEP_SUMMARY
           echo "- **Region**: asia-northeast1" >> $GITHUB_STEP_SUMMARY
-          echo "- **Image**: gcr.io/${{ secrets.GCP_PROJECT_ID }}/ai-chat:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/ai-chat:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "- **URL**: ${{ steps.get-url.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
